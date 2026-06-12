@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>前沿科技资讯日报 - ${DATE}</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg-primary: #fafafa;
+    --bg-secondary: #ffffff;
+    --bg-tertiary: #f3f4f6;
+    --text-primary: #111827;
+    --text-secondary: #6b7280;
+    --text-tertiary: #9ca3af;
+    --border-light: #e5e7eb;
+    --border-medium: #d1d5db;
+
+    /* Accent colors per section */
+    --accent-ai: #4f46e5;
+    --accent-policy: #dc2626;
+    --accent-bio: #059669;
+    --accent-quantum: #7c3aed;
+    --accent-hot: #ea580c;
+    --accent-china: #e11d48;
+
+    --font-main: 'Noto Sans SC', system-ui, -apple-system, sans-serif;
+    --font-sans: 'Inter', var(--font-main);
+  }
+
+  html { font-size: 16px; scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    font-family: var(--font-main);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 3rem 2rem;
+  }
+
+  /* ========== HEADER ========== */
+  .header {
+    text-align: center;
+    margin-bottom: 3rem;
+    padding-bottom: 2rem;
+    border-bottom: 1px solid var(--border-light);
+  }
+
+  .header-label {
+    font-family: var(--font-sans);
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--text-tertiary);
+    margin-bottom: 0.75rem;
+  }
+
+  .header-title {
+    font-size: 2.5rem;
+    font-weight: 900;
+    letter-spacing: -0.02em;
+    color: var(--text-primary);
+    line-height: 1.2;
+    margin-bottom: 0.75rem;
+  }
+
+  .header-date {
+    font-family: var(--font-sans);
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    letter-spacing: 0.05em;
+  }
+
+  /* ========== SECTION ========== */
+  .section { margin-bottom: 3rem; }
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1.25rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 2px solid var(--border-light);
+  }
+
+  .section-icon {
+    width: 32px; height: 32px;
+    display: flex; align-items: center; justify-content: center;
+    border-radius: 8px;
+    font-size: 1rem;
+    flex-shrink: 0;
+  }
+
+  .section-title {
+    font-family: var(--font-sans);
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--text-tertiary);
+  }
+
+  /* ========== NEWS LIST ========== */
+  .news-list { display: flex; flex-direction: column; gap: 0.5rem; }
+
+  .news-item {
+    padding: 1rem 1.25rem;
+    background: var(--bg-secondary);
+    border-radius: 10px;
+    border: 1px solid var(--border-light);
+    transition: box-shadow 0.15s ease, border-color 0.15s ease;
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .news-item:hover {
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    border-color: var(--border-medium);
+  }
+
+  .news-bullet {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    margin-top: 8px;
+  }
+
+  .news-content { flex: 1; }
+
+  .news-headline {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    line-height: 1.5;
+    margin-bottom: 0.3rem;
+  }
+
+  .news-summary {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    line-height: 1.6;
+  }
+
+  .news-meta {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-top: 0.4rem;
+    font-size: 0.75rem;
+    color: var(--text-tertiary);
+  }
+
+  .news-source {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.15rem 0.5rem;
+    border-radius: 4px;
+    font-weight: 500;
+    background: var(--bg-tertiary);
+    color: var(--text-secondary);
+  }
+
+  .news-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.2rem;
+    padding: 0.15rem 0.4rem;
+    border-radius: 4px;
+    font-weight: 600;
+    font-size: 0.7rem;
+  }
+
+  /* ========== TWO-COL LAYOUT ========== */
+  .two-col {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 1.5rem;
+  }
+
+  /* ========== HIGHLIGHT CARD (for hero stories) ========== */
+  .hero-card {
+    padding: 1.5rem;
+    background: var(--bg-secondary);
+    border-radius: 12px;
+    border: 1px solid var(--border-light);
+    margin-bottom: 1rem;
+  }
+
+  .hero-label {
+    font-family: var(--font-sans);
+    font-size: 0.65rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    padding: 0.2rem 0.6rem;
+    border-radius: 4px;
+    display: inline-block;
+    margin-bottom: 0.75rem;
+  }
+
+  .hero-headline {
+    font-size: 1.25rem;
+    font-weight: 700;
+    line-height: 1.4;
+    color: var(--text-primary);
+    margin-bottom: 0.5rem;
+  }
+
+  .hero-summary {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    line-height: 1.7;
+  }
+
+  /* ========== SIDEBAR STATS ========== */
+  .stat-card {
+    padding: 1rem 1.25rem;
+    background: var(--bg-secondary);
+    border-radius: 10px;
+    border: 1px solid var(--border-light);
+    margin-bottom: 0.75rem;
+  }
+
+  .stat-value {
+    font-family: var(--font-sans);
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    line-height: 1.2;
+  }
+
+  .stat-label {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    margin-top: 0.2rem;
+  }
+
+  /* ========== TAG COLORS ========== */
+  .accent-ai .section-icon, .accent-ai .news-bullet { background: rgba(79,70,229,0.1); color: var(--accent-ai); }
+  .accent-ai .hero-label { background: rgba(79,70,229,0.1); color: var(--accent-ai); }
+  .accent-policy .section-icon, .accent-policy .news-bullet { background: rgba(220,38,38,0.1); color: var(--accent-policy); }
+  .accent-policy .hero-label { background: rgba(220,38,38,0.1); color: var(--accent-policy); }
+  .accent-bio .section-icon, .accent-bio .news-bullet { background: rgba(5,150,105,0.1); color: var(--accent-bio); }
+  .accent-bio .hero-label { background: rgba(5,150,105,0.1); color: var(--accent-bio); }
+  .accent-quantum .section-icon, .accent-quantum .news-bullet { background: rgba(124,58,237,0.1); color: var(--accent-quantum); }
+  .accent-quantum .hero-label { background: rgba(124,58,237,0.1); color: var(--accent-quantum); }
+  .accent-hot .section-icon, .accent-hot .news-bullet { background: rgba(234,88,12,0.1); color: var(--accent-hot); }
+  .accent-hot .hero-label { background: rgba(234,88,12,0.1); color: var(--accent-hot); }
+  .accent-china .section-icon, .accent-china .news-bullet { background: rgba(225,29,72,0.1); color: var(--accent-china); }
+  .accent-china .hero-label { background: rgba(225,29,72,0.1); color: var(--accent-china); }
+
+  /* ========== FOOTER ========== */
+  .footer {
+    margin-top: 3rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--border-light);
+    text-align: center;
+    font-size: 0.75rem;
+    color: var(--text-tertiary);
+    line-height: 1.8;
+  }
+
+  /* ========== RESPONSIVE ========== */
+  @media (max-width: 768px) {
+    .container { padding: 2rem 1rem; }
+    .header-title { font-size: 1.75rem; }
+    .two-col { grid-template-columns: 1fr; }
+    .news-item { padding: 0.875rem; gap: 0.75rem; }
+  }
+
+  /* ========== PRINT ========== */
+  @media print {
+    body { background: #fff !important; }
+    .news-item:hover { box-shadow: none; border-color: var(--border-light); }
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+
+  <!-- HEADER -->
+  <header class="header">
+    <div class="header-label">Tech News Daily Digest</div>
+    <h1 class="header-title">前沿科技资讯日报</h1>
+    <div class="header-date">${DATE} · ${WEEKDAY}</div>
+  </header>
+
+  <!-- AI SECTION (two-col layout) -->
+  <section class="section accent-ai">
+    <div class="section-header">
+      <span class="section-icon">🤖</span>
+      <span class="section-title">AI · 人工智能</span>
+    </div>
+
+    <div class="two-col">
+      <div>
+        <!-- Hero story -->
+        <div class="hero-card">
+          <span class="hero-label">🔥 今日焦点</span>
+          <h2 class="hero-headline">Headline goes here</h2>
+          <p class="hero-summary">Summary of the key development with source attribution. Replace this content with actual news.</p>
+        </div>
+
+        <!-- News list -->
+        <div class="news-list">
+          <div class="news-item">
+            <span class="news-bullet"></span>
+            <div class="news-content">
+              <div class="news-headline">Headline</div>
+              <div class="news-summary">Summary text.</div>
+              <div class="news-meta">
+                <span class="news-source">Source Name</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sidebar -->
+      <div>
+        <div class="stat-card">
+          <div class="stat-value" style="color:var(--accent-ai)">N</div>
+          <div class="stat-label">AI 相关新闻总数</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" style="color:var(--accent-hot)">TOP</div>
+          <div class="stat-label">热门话题关键词</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- POLICY SECTION -->
+  <section class="section accent-policy">
+    <div class="section-header">
+      <span class="section-icon">⚖️</span>
+      <span class="section-title">AI 政策与监管</span>
+    </div>
+    <div class="news-list">
+      <div class="news-item">
+        <span class="news-bullet"></span>
+        <div class="news-content">
+          <div class="news-headline">Region: Policy details and impact.</div>
+          <div class="news-meta"><span class="news-source">Source</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- BIOTECH + QUANTUM (two-col) -->
+  <div class="two-col" style="margin-bottom:3rem;">
+    <section class="section accent-bio" style="margin-bottom:0">
+      <div class="section-header">
+        <span class="section-icon">🧬</span>
+        <span class="section-title">生物科技</span>
+      </div>
+      <div class="news-list">
+        <div class="news-item">
+          <span class="news-bullet"></span>
+          <div class="news-content">
+            <div class="news-headline">Headline</div>
+            <div class="news-summary">Summary.</div>
+            <div class="news-meta"><span class="news-source">Source</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section accent-quantum" style="margin-bottom:0">
+      <div class="section-header">
+        <span class="section-icon">⚛️</span>
+        <span class="section-title">量子计算 & 学术研究</span>
+      </div>
+      <div class="news-list">
+        <div class="news-item">
+          <span class="news-bullet"></span>
+          <div class="news-content">
+            <div class="news-headline">Headline</div>
+            <div class="news-summary">Summary.</div>
+            <div class="news-meta"><span class="news-source">Source</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- HOT TECH SECTION -->
+  <section class="section accent-hot">
+    <div class="section-header">
+      <span class="section-icon">💻</span>
+      <span class="section-title">热点科技</span>
+    </div>
+    <div class="news-list">
+      <div class="news-item">
+        <span class="news-bullet"></span>
+        <div class="news-content">
+          <div class="news-headline">Headline</div>
+          <div class="news-summary">Summary.</div>
+          <div class="news-meta"><span class="news-source">Source</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CHINA TECH SECTION -->
+  <section class="section accent-china">
+    <div class="section-header">
+      <span class="section-icon">🇨🇳</span>
+      <span class="section-title">中国科技前沿</span>
+    </div>
+    <div class="news-list">
+      <div class="news-item">
+        <span class="news-bullet"></span>
+        <div class="news-content">
+          <div class="news-headline">Headline</div>
+          <div class="news-summary">Summary.</div>
+          <div class="news-meta"><span class="news-source">Source</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    DATA SOURCES: Hacker News · The Verge · WIRED · MIT Tech Review · Ars Technica · TechCrunch · VentureBeat · Engadget · CNBC · 钛媒体 · 量子位 · 极客公园 · Hugging Face Blog<br>
+    Generated ${DATE}
+  </footer>
+
+</div>
+
+</body>
+</html>

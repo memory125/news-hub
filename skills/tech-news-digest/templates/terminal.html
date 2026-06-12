@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tech News Brief - ${DATE}</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #18181b;
+    --surface: #27272a;
+    --border: #3f3f46;
+    --text: #fafafa;
+    --muted: #a1a1aa;
+    --subtle: #71717a;
+
+    /* Terminal-style accents */
+    --green: #22c55e;
+    --amber: #f59e0b;
+    --red: #ef4444;
+    --blue: #3b82f6;
+    --purple: #a78bfa;
+
+    --font-mono: 'JetBrains Mono', monospace;
+    --font-main: 'Noto Sans SC', system-ui, sans-serif;
+  }
+
+  html { font-size: 14px; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-mono);
+    line-height: 1.7;
+  }
+
+  .container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem;
+  }
+
+  /* ========== TERMINAL HEADER ========== */
+  .terminal-bar {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1rem;
+    background: var(--surface);
+    border-radius: 8px 8px 0 0;
+    border: 1px solid var(--border);
+    border-bottom: none;
+  }
+
+  .terminal-dot {
+    width: 12px; height: 12px;
+    border-radius: 50%;
+  }
+
+  .terminal-title {
+    flex: 1;
+    text-align: center;
+    font-size: 0.7rem;
+    color: var(--subtle);
+    letter-spacing: 0.05em;
+  }
+
+  /* ========== TERMINAL BODY ========== */
+  .terminal-body {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 0 0 8px 8px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+  }
+
+  .prompt { color: var(--green); }
+  .command { color: var(--text); }
+  .output { color: var(--muted); }
+  .error { color: var(--red); }
+  .info { color: var(--blue); }
+  .warn { color: var(--amber); }
+
+  .header-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 0.25rem;
+  }
+
+  .header-date {
+    font-size: 0.75rem;
+    color: var(--subtle);
+    letter-spacing: 0.1em;
+    margin-bottom: 1rem;
+  }
+
+  /* ========== SEPARATOR ========== */
+  .separator {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 1.25rem 0;
+  }
+
+  /* ========== SECTION ========== */
+  .section { margin-bottom: 1.5rem; }
+
+  .section-header {
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--subtle);
+    margin-bottom: 0.75rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .section-header::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  /* ========== NEWS ITEM ========== */
+  .news-item {
+    padding: 0.6rem 0;
+    border-bottom: 1px solid rgba(255,255,255,0.03);
+  }
+
+  .news-item:last-child { border-bottom: none; }
+
+  .news-priority {
+    display: inline-block;
+    font-size: 0.6rem;
+    font-weight: 600;
+    padding: 0.1rem 0.4rem;
+    border-radius: 3px;
+    margin-right: 0.5rem;
+    vertical-align: middle;
+  }
+
+  .priority-critical { background: rgba(239,68,68,0.15); color: var(--red); }
+  .priority-high { background: rgba(245,158,11,0.15); color: var(--amber); }
+  .priority-medium { background: rgba(59,130,246,0.15); color: var(--blue); }
+  .priority-low { background: rgba(107,114,128,0.15); color: var(--subtle); }
+
+  .news-headline {
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--text);
+    line-height: 1.6;
+  }
+
+  .news-summary {
+    font-size: 0.8rem;
+    color: var(--muted);
+    margin-top: 0.2rem;
+    padding-left: 1.5rem;
+  }
+
+  .news-meta {
+    font-size: 0.7rem;
+    color: var(--subtle);
+    margin-top: 0.2rem;
+    padding-left: 1.5rem;
+  }
+
+  /* ========== STAT BLOCK ========== */
+  .stat-row {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 0.75rem;
+    flex-wrap: wrap;
+  }
+
+  .stat-block {
+    padding: 0.6rem 1rem;
+    background: var(--bg);
+    border-radius: 6px;
+    border: 1px solid var(--border);
+    min-width: 120px;
+  }
+
+  .stat-value {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--green);
+  }
+
+  .stat-label {
+    font-size: 0.65rem;
+    color: var(--subtle);
+    letter-spacing: 0.05em;
+  }
+
+  /* ========== TABLE ========== */
+  .terminal-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.8rem;
+  }
+
+  .terminal-table th {
+    text-align: left;
+    padding: 0.5rem 0.75rem;
+    color: var(--subtle);
+    font-weight: 600;
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .terminal-table td {
+    padding: 0.5rem 0.75rem;
+    color: var(--muted);
+    border-bottom: 1px solid rgba(255,255,255,0.03);
+  }
+
+  /* ========== FOOTER ========== */
+  .footer {
+    margin-top: 2rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--border);
+    font-size: 0.65rem;
+    color: var(--subtle);
+    letter-spacing: 0.05em;
+  }
+
+  /* ========== RESPONSIVE ========== */
+  @media (max-width: 640px) {
+    html { font-size: 13px; }
+    .container { padding: 1rem; }
+    .stat-row { flex-direction: column; }
+  }
+
+  /* ========== PRINT ========== */
+  @media print {
+    body { background: #fff !important; color: #000 !important; }
+    .terminal-body, .terminal-bar, .surface { background: #f5f5f5 !important; border-color: #ddd !important; }
+    * { color-adjust: exact !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+
+  <!-- Terminal Window -->
+  <div class="terminal-bar">
+    <span class="terminal-dot" style="background:#ef4444"></span>
+    <span class="terminal-dot" style="background:#f59e0b"></span>
+    <span class="terminal-dot" style="background:#22c55e"></span>
+    <span class="terminal-title">tech-news-digest — ${DATE}</span>
+  </div>
+
+  <div class="terminal-body">
+    <!-- Header -->
+    <pre style="margin:0;font-family:inherit;white-space:normal;">
+<span class="prompt">$</span> <span class="command">tech-news --date ${DATE} --format terminal</span>
+<span class="output">Loading data sources... [OK]</span>
+<span class="output">Fetching 15+ feeds... [DONE]</span>
+<span class="info">Generating daily digest...</span>
+    </pre>
+
+    <hr class="separator">
+
+    <div class="header-title">前沿科技资讯日报</div>
+    <div class="header-date">${DATE} · ${WEEKDAY}</div>
+
+    <!-- Stats Row -->
+    <div class="stat-row">
+      <div class="stat-block">
+        <div class="stat-value">N</div>
+        <div class="stat-label">总新闻数</div>
+      </div>
+      <div class="stat-block">
+        <div class="stat-value" style="color:var(--amber)">N</div>
+        <div class="stat-label">AI 相关</div>
+      </div>
+      <div class="stat-block">
+        <div class="stat-value" style="color:var(--blue)">15+</div>
+        <div class="stat-label">数据源</div>
+      </div>
+    </div>
+
+    <!-- AI Section -->
+    <section class="section">
+      <div class="section-header"><span class="prompt">▸</span> AI · 人工智能</div>
+      <div class="news-item">
+        <span class="news-priority priority-critical">CRITICAL</span>
+        <span class="news-headline">Headline goes here</span>
+        <div class="news-summary">Summary of the key development with source attribution.</div>
+        <div class="news-meta"><span class="info">source:</span> Source Name</div>
+      </div>
+    </section>
+
+    <!-- Policy Section -->
+    <section class="section">
+      <div class="section-header"><span class="prompt">▸</span> AI 政策与监管</div>
+      <table class="terminal-table">
+        <thead><tr><th>Region</th><th>Policy</th><th>Status</th></tr></thead>
+        <tbody>
+          <tr><td>🇺🇸 US</td><td>Policy description</td><td><span class="warn">Active</span></td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- Biotech + Quantum -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;">
+      <section class="section">
+        <div class="section-header"><span class="prompt" style="color:var(--green)">▸</span> 生物科技</div>
+        <div class="news-item">
+          <span class="news-headline">Headline</span>
+          <div class="news-summary">Summary.</div>
+        </div>
+      </section>
+      <section class="section">
+        <div class="section-header"><span class="prompt" style="color:var(--purple)">▸</span> 量子计算</div>
+        <div class="news-item">
+          <span class="news-headline">Headline</span>
+          <div class="news-summary">Summary.</div>
+        </div>
+      </section>
+    </div>
+
+    <!-- Hot Tech -->
+    <section class="section">
+      <div class="section-header"><span class="prompt" style="color:var(--amber)">▸</span> 热点科技</div>
+      <div class="news-item">
+        <span class="news-priority priority-high">HIGH</span>
+        <span class="news-headline">Headline</span>
+        <div class="news-summary">Summary.</div>
+        <div class="news-meta"><span class="info">source:</span> Source Name</div>
+      </div>
+    </section>
+
+    <!-- China Tech -->
+    <section class="section">
+      <div class="section-header"><span class="prompt" style="color:var(--red)">▸</span> 中国科技前沿</div>
+      <div class="news-item">
+        <span class="news-headline">Headline</span>
+        <div class="news-summary">Summary.</div>
+        <div class="news-meta"><span class="info">source:</span> Source Name</div>
+      </div>
+    </section>
+
+  </div><!-- /terminal-body -->
+
+  <!-- Footer -->
+  <footer class="footer">
+    <pre style="margin:0;font-family:inherit;white-space:normal;">
+<span class="prompt">$</span> <span class="command">tech-news --exit</span>
+<span class="output">Digest saved. Sources: Hacker News, The Verge, WIRED, Ars Technica, TechCrunch, VentureBeat, CNBC, 钛媒体, 量子位, 极客公园, Hugging Face Blog | ${DATE}</span>
+<span class="prompt">$</span> <span class="warn">_</span>
+    </pre>
+  </footer>
+
+</div>
+
+</body>
+</html>

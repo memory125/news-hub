@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>前沿科技资讯日报 - ${DATE}</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700;900&family=Orbitron:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg-deep: #0a0a0f;
+    --bg-card: rgba(15, 15, 30, 0.85);
+    --border-subtle: rgba(255,255,255,0.06);
+
+    /* Neon colors per section */
+    --neon-cyan: #00f0ff;
+    --neon-pink: #ff00aa;
+    --neon-green: #39ff14;
+    --neon-purple: #bf5fff;
+    --neon-orange: #ff8c00;
+    --neon-red: #ff3344;
+    --neon-yellow: #ffe600;
+    --neon-blue: #4d7cff;
+
+    /* Glow */
+    --glow-cyan: 0 0 20px rgba(0,240,255,0.3), 0 0 60px rgba(0,240,255,0.1);
+    --glow-pink: 0 0 20px rgba(255,0,170,0.3), 0 0 60px rgba(255,0,170,0.1);
+    --glow-green: 0 0 20px rgba(57,255,20,0.3), 0 0 60px rgba(57,255,20,0.1);
+    --glow-purple: 0 0 20px rgba(191,95,255,0.3), 0 0 60px rgba(191,95,255,0.1);
+    --glow-orange: 0 0 20px rgba(255,140,0,0.3), 0 0 60px rgba(255,140,0,0.1);
+    --glow-red: 0 0 20px rgba(255,51,68,0.3), 0 0 60px rgba(255,51,68,0.1);
+
+    --font-main: 'Noto Sans SC', system-ui, -apple-system, sans-serif;
+    --font-mono: 'Orbitron', monospace;
+  }
+
+  html { font-size: 14px; }
+
+  body {
+    background: var(--bg-deep);
+    color: #e0e0e0;
+    font-family: var(--font-main);
+    min-height: 100vh;
+    overflow-x: hidden;
+    position: relative;
+  }
+
+  /* Circuit pattern background */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      radial-gradient(circle at 25% 25%, rgba(0,240,255,0.03) 0%, transparent 50%),
+      radial-gradient(circle at 75% 75%, rgba(191,95,255,0.03) 0%, transparent 50%),
+      linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+    background-size: 100% 100%, 100% 100%, 40px 40px, 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 2rem 2rem 3rem;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* ========== HEADER ========== */
+  .header {
+    text-align: center;
+    margin-bottom: 2.5rem;
+    position: relative;
+  }
+
+  .header::after {
+    content: '';
+    display: block;
+    width: 80%;
+    max-width: 600px;
+    height: 1px;
+    margin: 1.2rem auto 0;
+    background: linear-gradient(90deg, transparent, var(--neon-cyan), var(--neon-purple), transparent);
+    box-shadow: 0 0 10px rgba(0,240,255,0.3);
+  }
+
+  .header-title {
+    font-family: var(--font-main);
+    font-size: 3rem;
+    font-weight: 900;
+    letter-spacing: 0.1em;
+    background: linear-gradient(135deg, var(--neon-cyan), var(--neon-purple), var(--neon-pink));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    filter: drop-shadow(0 0 20px rgba(0,240,255,0.3));
+    line-height: 1.3;
+  }
+
+  .header-date {
+    font-family: var(--font-mono);
+    font-size: 1rem;
+    color: rgba(255,255,255,0.4);
+    margin-top: 0.5rem;
+    letter-spacing: 0.3em;
+  }
+
+  .header-tags {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin-top: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .tag {
+    font-size: 0.75rem;
+    padding: 0.3rem 0.8rem;
+    border-radius: 999px;
+    font-weight: 500;
+    letter-spacing: 0.05em;
+    border: 1px solid;
+  }
+
+  .tag-ai { color: var(--neon-cyan); border-color: rgba(0,240,255,0.3); background: rgba(0,240,255,0.05); }
+  .tag-bio { color: var(--neon-green); border-color: rgba(57,255,20,0.3); background: rgba(57,255,20,0.05); }
+  .tag-quantum { color: var(--neon-purple); border-color: rgba(191,95,255,0.3); background: rgba(191,95,255,0.05); }
+  .tag-hot { color: var(--neon-orange); border-color: rgba(255,140,0,0.3); background: rgba(255,140,0,0.05); }
+
+  /* ========== BENTO GRID ========== */
+  .bento-grid {
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    grid-template-rows: auto;
+    gap: 1rem;
+  }
+
+  /* Card base */
+  .card {
+    background: var(--bg-card);
+    border-radius: 16px;
+    padding: 1.5rem;
+    position: relative;
+    overflow: hidden;
+    backdrop-filter: blur(10px);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .card:hover {
+    transform: translateY(-2px);
+  }
+
+  /* Card border glow */
+  .card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 16px;
+    padding: 1px;
+    background: linear-gradient(135deg, var(--card-accent), transparent 60%);
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+  }
+
+  /* Corner accent */
+  .card::after {
+    content: '';
+    position: absolute;
+    top: 0; right: 0;
+    width: 60px; height: 60px;
+    background: radial-gradient(circle at top right, var(--card-accent), transparent 70%);
+    opacity: 0.15;
+    pointer-events: none;
+  }
+
+  .card-icon {
+    font-size: 1.8rem;
+    margin-bottom: 0.5rem;
+    display: block;
+  }
+
+  .card-title {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    margin-bottom: 1rem;
+    opacity: 0.7;
+  }
+
+  .card-item {
+    padding: 0.6rem 0;
+    border-bottom: 1px solid var(--border-subtle);
+    font-size: 0.95rem;
+    line-height: 1.6;
+    display: flex;
+    align-items: flex-start;
+    gap: 0.6rem;
+  }
+
+  .card-item:last-child { border-bottom: none; }
+
+  .item-icon {
+    font-size: 1rem;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+
+  .item-text strong {
+    color: #fff;
+    font-weight: 700;
+  }
+
+  .highlight-badge {
+    display: inline-block;
+    font-size: 0.65rem;
+    padding: 0.15rem 0.5rem;
+    border-radius: 99px;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    margin-left: 0.5rem;
+    vertical-align: middle;
+  }
+
+  .source-tag {
+    font-size: 0.7rem;
+    opacity: 0.4;
+    display: block;
+    margin-top: 0.2rem;
+  }
+
+  /* ========== AI HERO (largest) ========== */
+  .card-hero {
+    grid-column: span 5;
+    --card-accent: var(--neon-cyan);
+    box-shadow: var(--glow-cyan), inset 0 1px 0 rgba(255,255,255,0.05);
+  }
+  .card-hero .card-title { color: var(--neon-cyan); }
+
+  /* ========== POLICY ========== */
+  .card-policy {
+    grid-column: span 4;
+    --card-accent: var(--neon-pink);
+    box-shadow: var(--glow-pink), inset 0 1px 0 rgba(255,255,255,0.05);
+  }
+  .card-policy .card-title { color: var(--neon-pink); }
+
+  /* ========== BIOTECH ========== */
+  .card-bio {
+    grid-column: span 3;
+    --card-accent: var(--neon-green);
+    box-shadow: var(--glow-green), inset 0 1px 0 rgba(255,255,255,0.05);
+  }
+  .card-bio .card-title { color: var(--neon-green); }
+
+  /* ========== QUANTUM ========== */
+  .card-quantum {
+    grid-column: span 3;
+    --card-accent: var(--neon-purple);
+    box-shadow: var(--glow-purple), inset 0 1px 0 rgba(255,255,255,0.05);
+  }
+  .card-quantum .card-title { color: var(--neon-purple); }
+
+  /* ========== HOT TECH (horizontal strip) ========== */
+  .card-hot {
+    grid-column: span 6;
+    --card-accent: var(--neon-orange);
+    box-shadow: var(--glow-orange), inset 0 1px 0 rgba(255,255,255,0.05);
+  }
+  .card-hot .card-title { color: var(--neon-orange); }
+
+  /* ========== CHINA TECH ========== */
+  .card-china {
+    grid-column: span 3;
+    --card-accent: var(--neon-red);
+    box-shadow: var(--glow-red), inset 0 1px 0 rgba(255,255,255,0.05);
+  }
+  .card-china .card-title { color: var(--neon-red); }
+
+  /* ========== HOT TECH ITEMS ROW ========== */
+  .hot-items {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.8rem;
+  }
+
+  .hot-item {
+    text-align: center;
+    padding: 0.8rem 0.5rem;
+    background: rgba(255,255,255,0.02);
+    border-radius: 12px;
+    border: 1px solid var(--border-subtle);
+  }
+
+  .hot-item-icon { font-size: 1.5rem; margin-bottom: 0.4rem; display: block; }
+  .hot-item-text { font-size: 0.85rem; line-height: 1.4; color: rgba(255,255,255,0.8); }
+
+  /* ========== CHINA HIGHLIGHT NUMBER ========== */
+  .china-number {
+    text-align: center;
+    margin-bottom: 1rem;
+    padding: 0.6rem;
+    background: rgba(255,51,68,0.08);
+    border-radius: 12px;
+    border: 1px solid rgba(255,51,68,0.2);
+  }
+
+  .china-number-value {
+    font-family: var(--font-mono);
+    font-size: 2rem;
+    font-weight: 900;
+    color: var(--neon-red);
+    text-shadow: 0 0 20px rgba(255,51,68,0.4);
+    line-height: 1.2;
+  }
+
+  .china-number-label {
+    font-size: 0.7rem;
+    color: rgba(255,255,255,0.4);
+    letter-spacing: 0.1em;
+  }
+
+  /* ========== FOOTER ========== */
+  .footer {
+    margin-top: 2rem;
+    text-align: center;
+    font-size: 0.7rem;
+    color: rgba(255,255,255,0.2);
+    letter-spacing: 0.1em;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--border-subtle);
+  }
+
+  /* ========== SCANNING LINE ANIMATION ========== */
+  @keyframes scanline {
+    0% { transform: translateY(-100%); opacity: 0; }
+    10% { opacity: 1; }
+    90% { opacity: 1; }
+    100% { transform: translateY(100vh); opacity: 0; }
+  }
+
+  .scanline {
+    position: fixed;
+    left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--neon-cyan), transparent);
+    opacity: 0.15;
+    z-index: 100;
+    pointer-events: none;
+    animation: scanline 8s linear infinite;
+  }
+
+  /* ========== RESPONSIVE ========== */
+  @media (max-width: 1024px) {
+    .bento-grid { grid-template-columns: repeat(6, 1fr); }
+    .card-hero { grid-column: span 6; }
+    .card-policy { grid-column: span 3; }
+    .card-bio { grid-column: span 3; }
+    .card-quantum { grid-column: span 3; }
+    .card-hot { grid-column: span 3; }
+    .card-china { grid-column: span 6; }
+  }
+
+  @media (max-width: 640px) {
+    html { font-size: 12px; }
+    .container { padding: 1rem; }
+    .bento-grid { grid-template-columns: 1fr; }
+    .card-hero, .card-policy, .card-bio, .card-quantum, .card-hot, .card-china { grid-column: span 1; }
+    .hot-items { grid-template-columns: 1fr; }
+    .header-title { font-size: 2rem; }
+  }
+
+  /* ========== PRINT STYLES ========== */
+  @media print {
+    body { background: #0a0a0f !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .scanline { display: none; }
+    .card:hover { transform: none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="scanline"></div>
+
+<div class="container">
+
+  <!-- HEADER -->
+  <header class="header">
+    <h1 class="header-title">前沿科技资讯日报</h1>
+    <div class="header-date">${DATE} · ${WEEKDAY}</div>
+    <div class="header-tags">
+      <span class="tag tag-ai">🤖 AI</span>
+      <span class="tag tag-bio">🧬 生物科技</span>
+      <span class="tag tag-quantum">⚛️ 量子计算</span>
+      <span class="tag tag-hot">💻 热点科技</span>
+    </div>
+  </header>
+
+  <!-- BENTO GRID -->
+  <div class="bento-grid">
+
+    <!-- AI HERO — Replace content below -->
+    <div class="card card-hero">
+      <span class="card-icon">🤖</span>
+      <div class="card-title">AI · 人工智能</div>
+
+      <!-- Add .card-item blocks here, one per news story. Example: -->
+      <div class="card-item">
+        <span class="item-icon">⚡</span>
+        <div class="item-text"><strong>Headline:</strong> Summary of the key development with source attribution.</div>
+      </div>
+
+    </div>
+
+    <!-- POLICY — Replace content below -->
+    <div class="card card-policy">
+      <span class="card-icon">⚖️</span>
+      <div class="card-title">AI 政策与监管</div>
+
+      <div class="card-item">
+        <span class="item-icon">🇬🇧</span>
+        <div class="item-text"><strong>Region:</strong> Policy details and impact.</div>
+      </div>
+
+    </div>
+
+    <!-- BIOTECH — Replace content below -->
+    <div class="card card-bio">
+      <span class="card-icon">🧬</span>
+      <div class="card-title">生物科技</div>
+
+      <div class="card-item">
+        <span class="item-icon">🧠</span>
+        <div class="item-text">
+          <strong>Headline</strong><br>
+          Brief summary of the breakthrough or development.
+          <span class="source-tag">— Source Name</span>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- QUANTUM — Replace content below -->
+    <div class="card card-quantum">
+      <span class="card-icon">⚛️</span>
+      <div class="card-title">量子计算 & 学术研究</div>
+
+      <div class="card-item">
+        <span class="item-icon">🔬</span>
+        <div class="item-text">
+          <strong>Headline</strong><br>
+          Research summary with source attribution.
+          <span class="source-tag">— Source Name</span>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- HOT TECH — Replace content below -->
+    <div class="card card-hot">
+      <span class="card-icon">💻</span>
+      <div class="card-title">热点科技</div>
+
+      <div class="hot-items">
+        <div class="hot-item">
+          <span class="hot-item-icon">🔓</span>
+          <div class="hot-item-text"><strong>Title</strong><br><small style="opacity:0.5">engagement metrics</small></div>
+        </div>
+        <div class="hot-item">
+          <span class="hot-item-icon">🖥️</span>
+          <div class="hot-item-text"><strong>Title</strong><br><small style="opacity:0.5">brief description</small></div>
+        </div>
+        <div class="hot-item">
+          <span class="hot-item-icon">🚗</span>
+          <div class="hot-item-text"><strong>Title</strong><br><small style="opacity:0.5">brief description</small></div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- CHINA TECH — Replace content below -->
+    <div class="card card-china">
+      <span class="card-icon">🇨🇳</span>
+      <div class="card-title">中国科技前沿</div>
+
+      <!-- Optional highlight number block: -->
+      <div class="china-number">
+        <div class="china-number-value">NUMBER</div>
+        <div class="china-number-label">Label description</div>
+      </div>
+
+      <div class="card-item">
+        <span class="item-icon">🦄</span>
+        <div class="item-text"><strong>Headline:</strong> Summary.</div>
+      </div>
+
+    </div>
+
+  </div><!-- /bento-grid -->
+
+  <!-- FOOTER — Update data sources list -->
+  <footer class="footer">
+    DATA SOURCES: Hacker News · The Verge · WIRED · MIT Tech Review · Ars Technica · TechCrunch · Google News · Reddit r/technology · arXiv cs.AI · OpenAI Blog · Anthropic · DeepMind · Meta AI · Hugging Face · Krebs on Security · The Hacker News · Schneier on Security · Nature Tech · Quanta Magazine · Reuters Tech · Bloomberg Tech · CNBC Tech · GitHub Changelog · Lobsters · 36氪 · 虎嗅 · InfoQ中国 · 钛媒体 · 极客公园 · 机器之心 | ${DATE}
+  </footer>
+
+</div><!-- /container -->
+
+</body>
+</html>
